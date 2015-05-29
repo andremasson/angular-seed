@@ -1,6 +1,6 @@
 'use strict';
 
 angular.module('myApp.user', [])
-.controller('UserController', [function() {
+.controller('UserController', [function($scope) {
 
 }]);
