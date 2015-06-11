@@ -1,6 +1,15 @@
-module.exports = function(grunt) {
+'use strict';
+
+module.exports = function (grunt) {
+
+	var config = {
+		app: 'app',
+		dist: 'dist'
+	};
 
 	grunt.initConfig({
+		config: config,
+
 		pkg: grunt.file.readJSON('package.json'),
 		concat: {
 			options: {
@@ -44,6 +53,59 @@ module.exports = function(grunt) {
 		watch: {
 			files: ['<%= jshint.files %>'],
 			tasks: ['jshint', 'qunit' ]
+		},
+		connect: {
+			options: {
+				port: 9000,
+				open: true,
+				livereload: 35729,
+				// Change this to '0.0.0.0' to access the server from outside
+				hostname: 'localhost'
+			},
+			livereload: {
+				options: {
+					middleware: function(connect) {
+						return [
+							connect.static('.tmp'),
+							connect().use('/bower_components', connect.static('./bower_components')),
+							connect.static(config.app)
+						];
+					}
+				}
+			},
+			test: {
+				options: {
+					open: false,
+					port: 9001,
+					middleware: function(connect) {
+						return [
+							connect.static('.tmp'),
+							connect.static('test'),
+							connect().use('/bower_components', connect.static('./bower_components')),
+							connect.static(config.app)
+						];
+					}
+				}
+			},
+			dist: {
+				options: {
+					base: '<%= config.dist %>',
+					livereload: false
+				}
+			}
+		},
+		clean: {
+			dist: {
+				files: [{
+					dot: true,
+					src: [
+						'.tmp',
+						'<%= config.dist %>/*',
+						'!<%= config.dist %>/.git*'
+					]
+				}]
+			},
+			server: '.tmp'
 		}
 	});
 
