@@ -8,11 +8,19 @@ angular.module('myApp', [
 	'myApp.user',
 	'myApp.version'
 ])
-
-.config(['$routeProvider', function($routeProvider) {
-	$routeProvider
-		.when('/view1', {templateUrl: '/view1/view1.html'})
-		.when('/view2', {templateUrl: '/view2/view2.html'})
-		.when('/sys/user', {templateUrl: '/sys/user/user.html'})
-		.otherwise({redirectTo: '/view1'});
-}]);
+.config(function($stateProvider, $urlRouterProvider) {
+	$urlRouterProvider.otherwise('/view1');
+	$stateProvider
+		.state('view1', {
+			url: '/view1',
+			templateUrl: '/view1/view1.html'
+		})
+		.state('view2', {
+			url: '/view2',
+			templateUrl: '/view2/view2.html'
+		})
+		.state('user', {
+			url: '/sys/user',
+			templateUrl: '/sys/user/user.html'
+		})
+});
