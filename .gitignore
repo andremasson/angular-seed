@@ -6,3 +6,5 @@ tmp
 .DS_Store
 .idea
 /Gruntfile-notready.js
+/dist/
+/npm-debug.log
