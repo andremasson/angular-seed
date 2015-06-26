@@ -177,7 +177,7 @@ module.exports = function (grunt) {
 	// this would be run by typing "grunt test" on the command line
 	grunt.registerTask('test', ['jshint', 'qunit']);
 
-	grunt.registerTask('build', ['clean', 'concat', 'uglify']);
+	grunt.registerTask('build', ['clean:dist', 'concat', 'uglify']);
 
 	grunt.registerTask('clear', ['clean']);
 

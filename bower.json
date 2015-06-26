@@ -6,11 +6,11 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "angular": "1.4.0",
+    "angular": "1.4.1",
     "angular-material": "0.10.0",
     "angular-ui-router": "0.2.14",
-    "angular-loader": "1.4.2",
-    "angular-mocks": "1.4.2",
+    "angular-loader": "1.4.1",
+    "angular-mocks": "1.4.1",
     "html5-boilerplate": "4.1.0"
   },
   "resolutions": {
