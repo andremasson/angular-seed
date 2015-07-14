@@ -142,46 +142,110 @@ module.exports = function (grunt) {
 				}]
 			},
 			server: '.tmp'
-		}
+		},
+		copy: {
+	      dist: {
+	        files: [{
+	          expand: true,
+	          dot: true,
+	          cwd: '<%= config.app %>',
+	          dest: '<%= config.dist %>',
+	          src: [
+	            '*.{ico,png,txt}',
+	            '.htaccess',
+	            '*.html',
+	            'views/{,*/}*.html',
+	            'bower_components/**/*',
+	            'images/{,*/}*.{webp}',
+	            'fonts/*'
+	          ]
+	        }, {
+	          expand: true,
+	          cwd: '.tmp/images',
+	          dest: '<%= config.dist %>/images',
+	          src: ['generated/*']
+	        }]
+	      },
+	      styles: {
+	        expand: true,
+	        cwd: '<%= config.app %>/styles',
+	        dest: '.tmp/styles/',
+	        src: '{,*/}*.css'
+	      }
+	    },
+	    ngmin: {
+	      dist: {
+	        files: [{
+	          expand: true,
+	          cwd: '.tmp/concat/scripts',
+	          src: '*.js',
+	          dest: '.tmp/concat/scripts'
+	        }]
+	      }
+	    },
+	    cdnify: {
+	      dist: {
+	        html: ['<%= config.dist %>/*.html']
+	      }
+	    },
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
+	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 
-	grunt.registerTask('serve', 'start the server and preview your app, --allow-remote for remote access', function (target) {
-		if (grunt.option('allow-remote')) {
-			grunt.config.set('connect.options.hostname', '0.0.0.0');
-		}
-		if (target === 'dist') {
+	grunt.registerTask('serve', function (target) {
+	    if (target === 'dist') {
 			return grunt.task.run(['build', 'connect:dist:keepalive']);
-		}
-
-		grunt.task.run([
+	    }
+	
+	    grunt.task.run([
 			'clean:server',
-			'wiredep',
+			'bower-install',
 			'concurrent:server',
 			'autoprefixer',
 			'connect:livereload',
 			'watch'
-		]);
-	});
-
-	grunt.registerTask('server', function (target) {
-		grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-		grunt.task.run([target ? ('serve:' + target) : 'serve']);
+	    ]);
 	});
 
 	// this would be run by typing "grunt test" on the command line
-	grunt.registerTask('test', ['jshint', 'qunit']);
+	grunt.registerTask('test', [
+	    'clean:server',
+	    'concurrent:test',
+	    'autoprefixer',
+	    'connect:test',
+	    'karma'
+	]);
 
-	grunt.registerTask('build', ['clean:dist', 'concat', 'uglify']);
+	grunt.registerTask('build', [
+		'clean:dist',
+	    'bower-install',
+	    'useminPrepare',
+	    'concurrent:dist',
+	    'autoprefixer',
+	    'concat',
+	    'ngmin',
+	    'copy:dist',
+	    'cdnify',
+	    'cssmin',
+	    'uglify',
+	    'rev',
+	    'usemin',
+	    'htmlmin'
+    ]);
 
 	grunt.registerTask('clear', ['clean']);
 
 	// the default task can be run just by typing "grunt" on the command line
-	grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
+	grunt.registerTask('default', [
+		'newer:jshint',
+	    'test',
+	    'build'
+    ]);
 
 };
