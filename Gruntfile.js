@@ -13,6 +13,7 @@ module.exports = function (grunt) {
 		config: config,
 
 		pkg: grunt.file.readJSON('package.json'),
+
 		concat: {
 			options: {
 				// define a string to put between each file in the concatenated output
@@ -25,6 +26,7 @@ module.exports = function (grunt) {
 				dest: 'dist/<%= pkg.name %>.js'
 			}
 		},
+
 		uglify: {
 			options: {
 				// the banner is inserted at the top of the output
@@ -36,9 +38,22 @@ module.exports = function (grunt) {
 				}
 			}
 		},
+
+		cssmin: {
+      dist: {
+        files: {
+          '<%= config.dist %>/main.css': [
+            '.tmp/styles/{,*/}*.css',
+            '<%= config.app %>/{,*/}*.css'
+          ]
+        }
+      }
+    },
+
 		qunit: {
 			files: ['test/**/*.html']
 		},
+
 		jshint: {
 			// configure JSHint (documented at http://www.jshint.com/docs/)
 			options: {
@@ -49,6 +64,7 @@ module.exports = function (grunt) {
 			all: [
 				'Gruntfile.js',
 				'<%= config.app %>/{,*/}*.js',
+				'!<%= config.app %>/vendor/*',
 				'test/spec/{,*/}*.js'
 			]
 		},
@@ -61,67 +77,186 @@ module.exports = function (grunt) {
 		},
 		// Rename files for browser caching
 		rev: {
-			dist: {
-				files: {
-					src: [
-						'<%=  %>',
-					]
-				}
-			}
-		},
+      dist: {
+        files: {
+          src: [
+            '<%= config.dist %>/{,*/}*.js',
+            '<%= config.dist %>/{,*/}*.css',
+            '<%= config.dist %>/images/{,*/}*.*',
+            '<%= config.dist %>/fonts/{,*/}*.*',
+            '<%= config.dist %>/*.{ico,png}'
+          ]
+        }
+      }
+    },
+
+		useminPrepare: {
+      options: {
+        dest: '<%= config.dist %>'
+      },
+      html: '<%= config.app %>/index.html'
+    },
+
+		usemin: {
+      options: {
+        assetsDirs: [
+          '<%= config.dist %>',
+          '<%= config.dist %>/images',
+          '<%= config.dist %>/styles'
+        ]
+      },
+      html: ['<%= config.dist %>/{,*/}*.html'],
+      css: ['<%= config.dist %>/styles/{,*/}*.css']
+    },
+
+		imagemin: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= config.app %>/images',
+          src: '{,*/}*.{gif,jpeg,jpg,png}',
+          dest: '<%= config.dist %>/images'
+        }]
+      }
+    },
+
+    svgmin: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= config.app %>/images',
+          src: '{,*/}*.svg',
+          dest: '<%= config.dist %>/images'
+        }]
+      }
+    },
+
+    htmlmin: {
+      dist: {
+        options: {
+          collapseBooleanAttributes: true,
+          collapseWhitespace: true,
+          conservativeCollapse: true,
+          removeAttributeQuotes: true,
+          removeCommentsFromCDATA: true,
+          removeEmptyAttributes: true,
+          removeOptionalTags: true,
+          removeRedundantAttributes: true,
+          useShortDoctype: true
+        },
+        files: [{
+          expand: true,
+          cwd: '<%= config.dist %>',
+          src: '{,*/}*.html',
+          dest: '<%= config.dist %>'
+        }]
+      }
+    },
+
 		watch: {
-			livereload: {
-				options: {
-					livereload: '<%= connect.options.livereload %>'
-				},
-				files: [
-					'<%= config.app %>/{,*/}*.html',
-					'.tmp/styles/{,*/}*.css',
-					'<%= config.app %>/images/{,*/}*'
-					]
-			}
+			bower: {
+        files: ['bower.json'],
+        tasks: ['wiredep']
+      },
+      js: {
+        files: ['<%= config.app %>/{,*/}*.js'],
+        tasks: ['jshint'],
+        options: {
+          livereload: true
+        }
+      },
+      jstest: {
+        files: ['test/spec/{,*/}*.js'],
+        tasks: ['test:watch']
+      },
+      gruntfile: {
+        files: ['Gruntfile.js']
+      },
+      styles: {
+        files: ['<%= config.app %>/{,*/}*.css'],
+        tasks: ['newer:copy:styles', 'autoprefixer']
+      },
+      livereload: {
+        options: {
+          livereload: '<%= connect.options.livereload %>'
+        },
+        files: [
+          '<%= config.app %>/{,*/}*.html',
+          '.tmp/{,*/}*.css',
+          '<%= config.app %>/images/{,*/}*'
+        ]
+      }
 		},
+
 		connect: {
-			options: {
-				port: 9000,
-				open: true,
-				livereload: 35729,
-				// Change this to '0.0.0.0' to access the server from outside
-				hostname: 'localhost'
-			},
-			livereload: {
-				options: {
-					middleware: function(connect) {
-						return [
-							connect.static('.tmp'),
-							connect().use('/bower_components', connect.static('./bower_components')),
-							connect.static(config.app)
-						];
-					}
-				}
-			},
-			test: {
-				options: {
-					open: false,
-					port: 9001,
-					hostname: 'localhost',
-					middleware: function(connect) {
-						return [
-							connect.static('.tmp'),
-							connect.static('test'),
-							connect().use('/bower_components', connect.static('./bower_components')),
-							connect.static(config.app)
-						];
-					}
-				}
-			},
-			dist: {
-				options: {
-					base: '<%= config.dist %>',
-					livereload: false
-				}
-			}
-		},
+      options: {
+        port: 9000,
+        open: true,
+        livereload: 35729,
+        // Change this to '0.0.0.0' to access the server from outside
+        hostname: 'localhost'
+      },
+      livereload: {
+        options: {
+          middleware: function(connect) {
+            return [
+              connect.static('.tmp'),
+              connect().use('/bower_components', connect.static('./bower_components')),
+              connect.static(config.app)
+            ];
+          }
+        }
+      },
+
+      test: {
+        options: {
+          open: false,
+          port: 9001,
+          middleware: function(connect) {
+            return [
+              connect.static('.tmp'),
+              connect.static('test'),
+              connect().use('/bower_components', connect.static('./bower_components')),
+              connect.static(config.app)
+            ];
+          }
+        }
+      },
+      dist: {
+        options: {
+          base: '<%= config.dist %>',
+          livereload: false
+        }
+      }
+    },
+
+		copy: {
+      dist: {
+        files: [{
+          expand: true,
+          dot: true,
+          cwd: '<%= config.app %>',
+          dest: '<%= config.dist %>',
+          src: [
+            '*.{ico,png,txt}',
+            'images/{,*/}*.webp',
+            '{,*/}*.html',
+            'styles/fonts/{,*/}*.*'
+          ]
+        }, {
+          src: 'node_modules/apache-server-configs/dist/.htaccess',
+          dest: '<%= config.dist %>/.htaccess'
+        }]
+      },
+      styles: {
+        expand: true,
+        dot: true,
+        cwd: '<%= config.app %>/styles',
+        dest: '.tmp/styles/',
+        src: '{,*/}*.css'
+      }
+    },
+
 		mocha: {
 			all: {
 				options: {
@@ -130,6 +265,7 @@ module.exports = function (grunt) {
 				}
 			}
 		},
+
 		clean: {
 			dist: {
 				files: [{
@@ -143,109 +279,99 @@ module.exports = function (grunt) {
 			},
 			server: '.tmp'
 		},
-		copy: {
-	      dist: {
-	        files: [{
-	          expand: true,
-	          dot: true,
-	          cwd: '<%= config.app %>',
-	          dest: '<%= config.dist %>',
-	          src: [
-	            '*.{ico,png,txt}',
-	            '.htaccess',
-	            '*.html',
-	            'views/{,*/}*.html',
-	            'bower_components/**/*',
-	            'images/{,*/}*.{webp}',
-	            'fonts/*'
-	          ]
-	        }, {
-	          expand: true,
-	          cwd: '.tmp/images',
-	          dest: '<%= config.dist %>/images',
-	          src: ['generated/*']
-	        }]
-	      },
-	      styles: {
-	        expand: true,
-	        cwd: '<%= config.app %>/styles',
-	        dest: '.tmp/styles/',
-	        src: '{,*/}*.css'
-	      }
-	    },
-	    ngmin: {
-	      dist: {
-	        files: [{
-	          expand: true,
-	          cwd: '.tmp/concat/scripts',
-	          src: '*.js',
-	          dest: '.tmp/concat/scripts'
-	        }]
-	      }
-	    },
-	    cdnify: {
-	      dist: {
-	        html: ['<%= config.dist %>/*.html']
-	      }
-	    },
+
+		autoprefixer: {
+      options: {
+        browsers: ['> 1%', 'last 2 versions', 'Firefox ESR', 'Opera 12.1']
+      },
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '.tmp/',
+          src: '{,*/}*.css',
+          dest: '.tmp/'
+        }]
+      }
+    },
+
+		concurrent: {
+      server: [
+        'copy:styles'
+      ],
+      test: [
+        'copy:styles'
+      ],
+      dist: [
+        'copy:styles',
+        'imagemin',
+        'svgmin'
+      ]
+    }
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
-	grunt.loadNpmTasks('grunt-contrib-copy');
-	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 
-	grunt.registerTask('serve', function (target) {
-	    if (target === 'dist') {
+	grunt.registerTask('serve', 'start the server and preview your app, --allow-remote for remote access', function (target) {
+		if (grunt.option('allow-remote')) {
+			grunt.config.set('connect.options.hostname', '0.0.0.0');
+		}
+		if (target === 'dist') {
 			return grunt.task.run(['build', 'connect:dist:keepalive']);
-	    }
-	
-	    grunt.task.run([
+		}
+
+		grunt.task.run([
 			'clean:server',
-			'bower-install',
+			'wiredep',
 			'concurrent:server',
 			'autoprefixer',
 			'connect:livereload',
 			'watch'
-	    ]);
+		]);
 	});
 
-	// this would be run by typing "grunt test" on the command line
-	grunt.registerTask('test', [
-	    'clean:server',
-	    'concurrent:test',
-	    'autoprefixer',
-	    'connect:test',
-	    'karma'
-	]);
+	grunt.registerTask('server', function (target) {
+		grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
+		grunt.task.run([target ? ('serve:' + target) : 'serve']);
+	});
+
+	grunt.registerTask('test', function (target) {
+    if (target !== 'watch') {
+      grunt.task.run([
+        'clean:server',
+        'concurrent:test',
+        'autoprefixer'
+      ]);
+    }
+
+    grunt.task.run([
+      'connect:test',
+      'mocha'
+    ]);
+  });
 
 	grunt.registerTask('build', [
-		'clean:dist',
-	    'bower-install',
-	    'useminPrepare',
-	    'concurrent:dist',
-	    'autoprefixer',
-	    'concat',
-	    'ngmin',
-	    'copy:dist',
-	    'cdnify',
-	    'cssmin',
-	    'uglify',
-	    'rev',
-	    'usemin',
-	    'htmlmin'
-    ]);
+    'clean:dist',
+    'wiredep',
+    'useminPrepare',
+    'concurrent:dist',
+    'autoprefixer',
+    'concat',
+    'cssmin',
+    'uglify',
+    'copy:dist',
+    'rev',
+    'usemin',
+    'htmlmin'
+  ]);
 
-	grunt.registerTask('clear', ['clean']);
-
-	// the default task can be run just by typing "grunt" on the command line
-	grunt.registerTask('default', [
-		'newer:jshint',
-	    'test',
-	    'build'
-    ]);
+  grunt.registerTask('default', [
+    'newer:jshint',
+    'test',
+    'build'
+  ]);
 
 };
