@@ -1,26 +1,32 @@
 'use strict';
+/* global angular */
 
 // Declare app level module which depends on views, and components
-angular.module('myApp', [
+var myApp = angular.module('myApp', [
 	'ui.router',
-	'myApp.view1',
-	'myApp.view2',
-	'myApp.user',
-	'myApp.version'
-])
-.config(function($stateProvider, $urlRouterProvider) {
-	$urlRouterProvider.otherwise('/view1');
-	$stateProvider
-		.state('view1', {
-			url: '/view1',
-			templateUrl: '/view1/view1.html'
-		})
-		.state('view2', {
-			url: '/view2',
-			templateUrl: '/view2/view2.html'
-		})
-		.state('user', {
-			url: '/sys/user',
-			templateUrl: '/sys/user/user.html'
-		})
+	'ngResource',
+	'myAppFilters'
+]);
+
+myApp.config(['$httpProvider', '$locationProvider', function($httpProvider, $locationProvider) {
+	$httpProvider.defaults.withCredentials = true;
+    $httpProvider.defaults.useXDomain = true;
+    delete $httpProvider.defaults.headers.common['X-Requested-With'];
+
+	$locationProvider.html5Mode({
+	  enabled: true,
+	  requireBase: false
+	});
+}]);
+
+var apiRoot = 'https://localhost/api/'; 
+
+myApp.run(function($rootScope) {
+    console.log('Application started!');
 });
+
+// For debugging
+function getAngularElement(name, element) {
+    element = element || '*[ng-app]';
+    return angular.element(element).injector().get(name);
+}

@@ -1,0 +1,35 @@
+<div class="row" ng-show="mensagem != ''">
+    <div class="col s12">
+        <div class="card-panel teal">
+          <span class="white-text" ng-bind="mensagem">
+          </span>
+        </div>
+    </div>
+</div>
+<div class="login">
+<div class="row">
+    <div class="input-field col s12">
+        <input ng-model="usuario" id="user" type="text" class="validate">
+        <label for="user">Usuário</label>
+    </div>
+</div>
+<div class="row">
+    <div class="input-field col s12">
+        <input ng-model="senha" id="password" type="password" class="validate">
+        <label for="password">Senha</label>
+    </div>
+</div>
+</div>
+
+<div class="row actions">
+    <div class="col s6" >
+        <button class="btn waves-effect waves-light" ng-click="btnCancelar()" name="action">Cancelar
+            <i class="mdi-navigation-cancel"></i>
+        </button>
+    </div>
+    <div class="col s6">
+        <button class="btn waves-effect waves-light" ng-click="btnLogin()" name="action">Login
+            <i class="mdi-action-done"></i>
+        </button>
+    </div>
+</div>

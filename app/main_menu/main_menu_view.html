@@ -1,0 +1,47 @@
+<div class="container">
+    <div class="row" ng-show="mensagem != ''">
+        <div class="col s12">
+            <div class="card-panel teal">
+              <span class="white-text" ng-bind="mensagem">
+              </span>
+            </div>
+        </div>
+    </div>
+    <div class="row main-menu">
+        <div class="col s6">
+            <div class="center">
+                <a href="#" ng-click="btnWorkflow()">
+                    <i class="mdi-action-view-module"></i>
+                    <p class="caption">Workflow</p>
+                </a>
+            </div>
+        </div>
+        <div class="col s6" ng-hide="exibirLogout">
+            <div class="center">
+                <a href="#" ng-click="btnLogin()">
+                    <i class="mdi-action-account-circle"></i>
+                    <p class="caption">Login</p>
+                </a>
+            </div>
+        </div>
+        <div class="col s6" ng-show="exibirLogout">
+            <div class="center">
+                <a href="#" ng-click="btnLogout()">
+                    <i class="mdi-action-highlight-remove"></i>
+                    <p class="caption">Logout</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalSair" class="modal">
+    <div class="modal-content">
+        <h4>Sair</h4>
+        <p>Deseja realmente sair?</p>
+    </div>
+    <div class="modal-footer">
+        <button class=" modal-action modal-close waves-effect waves-green btn-flat" ng-click="btnConfirmaSair()">Sim</button>
+        <button class=" modal-action modal-close waves-effect waves-green btn-flat">Não</button>
+    </div>
+</div>

@@ -6,14 +6,18 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "angular": "1.4.3",
-    "angular-material": "0.10.0",
+    "angular": "1.4.4",
     "angular-ui-router": "0.2.14",
     "angular-loader": "1.4.1",
+    "angular-resource": "1.4.3",
     "angular-mocks": "1.4.1",
-    "html5-boilerplate": "4.1.0"
+    "angular-animate": "1.4.4",
+    "html5-boilerplate": "4.1.0",
+    "jquery": "2.1.4",
+    "materialize": "0.97.0"
+    
   },
   "resolutions": {
-    "angular": "1.4.3"
+    "angular": "1.4.4"
   }
 }

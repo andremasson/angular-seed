@@ -1,0 +1,21 @@
+<div class="navbar-fixed">
+  <nav class="navbar">
+    <div class="nav-wrapper">
+      <h4 class="brand-logo center">Workflow</h4>
+      <a href="#" ng-click="back()" class="left"><i class="{{ buttonAction }}"></i></a>
+      <a ng-show="menuVisivel" class="dropdown-button right" href="#" data-activates="dropdown1" data-ng-init="init_dropdown()">{{ selectedItem }}<i class="mdi-navigation-arrow-drop-down right"></i></a>
+    </div>
+  </nav>
+</div>
+
+<ul id="dropdown1" class="dropdown-content">
+  <li><a href="#" ng-click="btnTarefa()">Tarefa</a></li>
+  <li class="divider"></li>
+  <li><a href="#" ng-click="btnDetalhes()">Detalhes</a></li>
+  <li class="divider"></li>
+  <li><a href="#" ng-click="btnHistorico()">Histórico</a></li>
+  <li class="divider"></li>
+  <li><a href="#" ng-click="btnAnexos()">Anexos</a></li>
+  <li class="divider"></li>
+  <li><a href="#" ng-click="btnAcoes()">Ações</a></li>
+</ul>
